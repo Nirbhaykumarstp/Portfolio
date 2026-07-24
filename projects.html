@@ -272,19 +272,39 @@
                   </a>
                   <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4" x-text="p.desc"></p>
                   <div class="flex items-center justify-between">
-                    <a :href="p.url"
-                      class="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-white nav-link">View
-                      project →</a>
+                    <div class="flex items-center gap-3">
+                      <a :href="p.url"
+                        class="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-white nav-link">View
+                        caseStudy</a>
+                      <a x-show="p.live" :href="p.live" target="_blank" rel="noopener noreferrer" @click.stop
+                        title="Live demo"
+                        class="w-7 h-7 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-accent hover:text-accent transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                      <a x-show="p.repo" :href="p.repo" target="_blank" rel="noopener noreferrer" @click.stop
+                        title="GitHub repo"
+                        class="w-7 h-7 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-accent hover:text-accent transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path
+                            d="M12 .5C5.73.5.5 5.73.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.9 10.9 0 015.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.14 0 1.54-.01 2.79-.01 3.17 0 .3.2.66.79.55A11.5 11.5 0 0023.5 12C23.5 5.73 18.27.5 12 .5z" />
+                        </svg>
+                      </a>
+                    </div>
                     <span class="text-xs text-zinc-400" x-text="p.year"></span>
                   </div>
                 </div>
-              </article>
             </div>
-          </template>
+            </article>
         </div>
-        <div x-show="visibleCount === 0" x-cloak class="text-center py-20">
-          <p class="text-zinc-400 text-sm">No projects in this category yet.</p>
-        </div>
+        </template>
+      </div>
+      <div x-show="visibleCount === 0" x-cloak class="text-center py-20">
+        <p class="text-zinc-400 text-sm">No projects in this category yet.</p>
+      </div>
       </div>
     </section>
 
@@ -320,23 +340,17 @@
         filter: 'all',
 
         filterOptions: [
-          { value: 'all', label: 'All (9)' },
-          { value: 'saas', label: 'SaaS' },
+          { value: 'all', label: 'All (2)' },
+          { value: 'saas', label: 'Web app' },
           { value: 'landing', label: 'Landing page' },
           { value: 'agency', label: 'Agency' },
           { value: 'ecommerce', label: 'E-commerce' },
         ],
 
         allProjects: [
-          { id: 1, title: 'CountDown-Timer', category: 'saas', categoryLabel: 'SaaS', tags: ['HTML', 'CSS', 'JavaScript'], year: '2026', desc: 'A countdown timer updates with every second and give exact hour minute and seconds that are spend.', img: 'Projectsimages/counter.png', url: 'case-study.html' },
-          { id: 2, title: 'Portfolio', category: 'landing', categoryLabel: 'Landing page', tags: ['HTML5', 'Tailwind CSS', 'Alpine.js'], year: '2026', desc: "You re looking at the project. Built with Tailwind CSS + Alpine.js — a lightweight stack handling theming, animations, and forms without a heavy JS framework. See how it's built →", img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=700&q=80', url: 'case-study.html' },
-          { id: 3, title: 'Orea — Creative Agency', category: 'agency', categoryLabel: 'Agency', tags: ['Agency', 'Animation'], year: '2024', desc: 'Bold editorial site for a Paris-based branding studio. Scroll-driven animations and custom cursor.', img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=700&q=80', url: 'case-study.html' },
-          { id: 4, title: 'Vesta — Real Estate', category: 'landing', categoryLabel: 'Landing page', tags: ['Landing page', 'Real Estate'], year: '2024', desc: 'Conversion-focused landing page for a proptech startup entering the French market.', img: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=700&q=80', url: 'case-study.html' },
-          { id: 5, title: 'Arkio — SaaS Analytics', category: 'saas', categoryLabel: 'SaaS', tags: ['SaaS', 'Dashboard', 'Figma'], year: '2024', desc: 'Data visualisation dashboard for a B2B analytics platform. Designed for clarity at high data density.', img: 'https://images.unsplash.com/photo-1581472723648-909f4851d4ae?w=700&q=80', url: 'case-study.html' },
-          { id: 6, title: 'Bloom — E-commerce', category: 'ecommerce', categoryLabel: 'E-commerce', tags: ['E-commerce', 'Shopify'], year: '2023', desc: 'Custom Shopify theme for a sustainable cosmetics brand. Mobile-first with high emphasis on product imagery.', img: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=700&q=80', url: 'case-study.html' },
-          { id: 7, title: 'Mira — Health App', category: 'landing', categoryLabel: 'Landing page', tags: ['Landing page', 'Health', 'Tailwind'], year: '2023', desc: 'App landing page for a mental wellness startup. Warm, accessible design with strong social proof.', img: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=700&q=80', url: 'case-study.html' },
-          { id: 8, title: 'Noto — Agency Rebrand', category: 'agency', categoryLabel: 'Agency', tags: ['Agency', 'Rebrand'], year: '2023', desc: 'Full rebrand and website for a digital communications agency in Lyon.', img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=700&q=80', url: 'case-study.html' },
-          { id: 9, title: 'Kova — E-commerce', category: 'ecommerce', categoryLabel: 'E-commerce', tags: ['E-commerce', 'Figma'], year: '2023', desc: 'Product page redesign and checkout optimisation for a DTC furniture brand. Reduced cart abandonment by 18%.', img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=700&q=80', url: 'case-study.html' },
+          // TODO: replace live/repo with your real URLs. Leave as '' to hide that icon on the card.
+          { id: 1, title: 'CountDown-Timer', category: 'saas', categoryLabel: 'SaaS', tags: ['HTML', 'CSS', 'JavaScript'], year: '2026', desc: 'A countdown timer updates with every second and give exact hour minute and seconds that are spend.', img: 'Projectsimages/counter.png', url: 'case-study-countdown.html', live: 'https://timer-project-countdown.vercel.app', repo: 'https://github.com/Nirbhaykumarstp/Timer_project-countdown-' },
+          { id: 2, title: 'Portfolio', category: 'landing', categoryLabel: 'Landing page', tags: ['HTML5', 'Tailwind CSS', 'Alpine.js'], year: '2026', desc: "You re looking at the project. Built with Tailwind CSS + Alpine.js — a lightweight stack handling theming, animations, and forms without a heavy JS framework. See how it's built →", img: 'Projectsimages/portfolio-project.png', url: 'case-study-portfolio.html', live: 'https://nirbhaykumar.vercel.app', repo: 'https://github.com/Nirbhaykumarstp/Portfolio' },
         ],
 
         get visibleCount() {
