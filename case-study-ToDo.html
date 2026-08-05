@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{
+  dark: localStorage.getItem('theme')==='dark'||(!localStorage.getItem('theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches),
+  scrolled: false,
+  mobileMenu: false,
+  progress: 0
+}" :class="{'dark':dark}" x-init="
+  $watch('dark', v => localStorage.setItem('theme', v ? 'dark' : 'light'));
+  window.addEventListener('scroll', () => {
+    scrolled = window.scrollY > 20;
+    progress = Math.min(100, Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100));
+  }, { passive: true });
+" class="scroll-smooth">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XV7KD7E7G0"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-XV7KD7E7G0');
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Novu — SaaS Dashboard redesign case study by Eliott. How a full UX overhaul reduced cognitive load by 40% and improved trial-to-paid conversion." />
+    <meta name="author" content="Eliott" />
+    <meta property="og:title" content="Novu — SaaS Dashboard · Case Study by Eliott" />
+    <meta property="og:type" content="article" />
+    <title>ToDo-Application- Project-Case study-Nirbhay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { display: ['PT Sans', 'sans-serif'], body: ['DM Sans', 'sans-serif'] },
+                    colors: { accent: '#FF6B2B', 'accent-light': '#FF8F5C' }
+                }
+            }
+        }
+    </script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'PT Sans', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #FF6B2B;
+            border-radius: 99px;
+        }
+
+        body {
+            transition: background-color .3s, color .3s;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: .4;
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1.5px;
+            background: currentColor;
+            transition: width .25s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: rgba(255, 255, 255, .18);
+            transform: skewX(-20deg);
+            transition: left .4s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .btn-primary:hover::after {
+            left: 160%;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .photo-frame {
+            position: relative;
+            overflow: hidden;
+            background: #e4e4e7;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Reading progress */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: #FF6B2B;
+            z-index: 100;
+            transition: width .1s linear;
+        }
+
+        /* Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity .55s cubic-bezier(.4, 0, .2, 1), transform .55s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .d1 {
+            transition-delay: .07s
+        }
+
+        .d2 {
+            transition-delay: .14s
+        }
+
+        .d3 {
+            transition-delay: .21s
+        }
+
+        .d4 {
+            transition-delay: .28s
+        }
+
+        /* Case study prose */
+        .prose-cs h2 {
+            font-family: 'PT Sans', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 700;
+            margin: 2.75rem 0 1rem;
+            line-height: 1.25;
+        }
+
+        .prose-cs h3 {
+            font-family: 'PT Sans', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 2rem 0 .6rem;
+            line-height: 1.3;
+            color: #FF6B2B;
+        }
+
+        .prose-cs p {
+            margin: 0 0 1.4rem;
+            line-height: 1.82;
+            color: #52525b;
+        }
+
+        .dark .prose-cs p {
+            color: #a1a1aa;
+        }
+
+        .prose-cs ul {
+            margin: 0 0 1.4rem 1.5rem;
+            list-style: disc;
+        }
+
+        .prose-cs li {
+            margin-bottom: .45rem;
+            line-height: 1.7;
+            color: #52525b;
+        }
+
+        .dark .prose-cs li {
+            color: #a1a1aa;
+        }
+
+        .prose-cs blockquote {
+            border-left: 3px solid #FF6B2B;
+            padding: .75rem 1.25rem;
+            margin: 0 0 1.8rem;
+            background: #fff7f4;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .dark .prose-cs blockquote {
+            background: #27272a;
+        }
+
+        .prose-cs blockquote p {
+            color: #52525b;
+            font-style: italic;
+            margin: 0;
+        }
+
+        .dark .prose-cs blockquote p {
+            color: #a1a1aa;
+        }
+
+        .prose-cs hr {
+            border: none;
+            border-top: 1px solid #e4e4e7;
+            margin: 2.5rem 0;
+        }
+
+        .dark .prose-cs hr {
+            border-top-color: #27272a;
+        }
+
+        .prose-cs a {
+            color: #FF6B2B;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        /* Stat card */
+        .stat-card {
+            border-left: 3px solid #FF6B2B;
+        }
+
+        /* Image caption */
+        .img-caption {
+            font-size: .8rem;
+            color: #a1a1aa;
+            text-align: center;
+            margin-top: .6rem;
+        }
+
+        /* Step badge */
+        .step-badge {
+            width: 2rem;
+            height: 2rem;
+            min-width: 2rem;
+            border-radius: 50%;
+            background: #FF6B2B;
+            color: #fff;
+            font-family: 'PT Sans', sans-serif;
+            font-weight: 700;
+            font-size: .85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* card hover */
+        .card-h {
+            transition: transform .28s cubic-bezier(.4, 0, .2, 1), border-color .18s;
+        }
+
+        .card-h:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+
+<body class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-body antialiased">
+
+    <!-- Reading progress bar -->
+    <div class="progress-bar" :style="`width:${progress}%`" role="progressbar" :aria-valuenow="progress"
+        aria-valuemin="0" aria-valuemax="100" aria-label="Reading progress"></div>
+
+    <!-- ═══ NAV ═══ -->
+    <header class="fixed top-0.5 left-0 right-0 z-50 transition-all duration-300"
+        :class="scrolled ? 'bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md shadow-sm shadow-black/5' : 'bg-transparent'">
+        <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between" aria-label="Main navigation">
+            <a href="index.html" class="font-display font-bold text-xl tracking-tight z-10">
+                <span class="text-zinc-900 dark:text-white">Nirbhay</span><span class="text-accent">Kumar</span>
+            </a>
+            <ul class="hidden md:flex items-center gap-8 text-sm font-medium" role="list">
+                <li><a href="index.html#services"
+                        class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Skills</a>
+                </li>
+                <li><a href="projects.html" class="nav-link text-accent font-medium">Projects</a></li>
+                <li><a href="index.html#about"
+                        class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">About</a>
+                </li>
+                <!-- <li><a href="blog.html" class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Blog</a></li> -->
+                <li><a href="index.html#contact"
+                        class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Contact</a>
+                </li>
+            </ul>
+            <div class="flex items-center gap-3">
+                <button @click="dark=!dark"
+                    class="w-9 h-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    :aria-label="dark ? 'Light mode' : 'Dark mode'">
+                    <svg x-show="!dark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                    </svg>
+                    <svg x-show="dark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                    </svg>
+                </button>
+                <a href="index.html#contact"
+                    class="hidden md:inline-flex items-center gap-2 btn-primary bg-accent text-white text-sm font-medium px-5 py-2 rounded-full hover:bg-accent-light transition-colors">Hire
+                    me →</a>
+                <button @click="mobileMenu=!mobileMenu"
+                    class="md:hidden w-9 h-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800"
+                    aria-label="Toggle menu">
+                    <svg x-show="!mobileMenu" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <svg x-show="mobileMenu" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </nav>
+        <div x-show="mobileMenu" x-cloak x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-2"
+            class="md:hidden bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-zinc-900">
+            <ul class="flex flex-col px-6 py-4 gap-4 text-sm font-medium" role="list">
+                <li><a href="index.html#services" @click="mobileMenu=false"
+                        class="block text-zinc-700 dark:text-zinc-300">SKills</a></li>
+                <li><a href="projects.html" @click="mobileMenu=false" class="block text-accent font-medium">Projects</a>
+                </li>
+                <li><a href="index.html#about" @click="mobileMenu=false"
+                        class="block text-zinc-700 dark:text-zinc-300">About</a></li>
+                <!-- <li><a href="blog.html" @click="mobileMenu=false" class="block text-zinc-700 dark:text-zinc-300">Blog</a></li> -->
+                <li><a href="index.html#contact" @click="mobileMenu=false"
+                        class="block text-zinc-700 dark:text-zinc-300">Contact</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ═══ CASE STUDY HEADER ═══ -->
+        <article>
+            <header class="pt-32 pb-10 max-w-4xl mx-auto px-6">
+
+                <!-- Back link -->
+                <a href="projects.html"
+                    class="inline-flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-accent transition-colors mb-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                    </svg>
+                    Back to projects
+                </a>
+
+                <!-- Tags + date -->
+                <div class="flex flex-wrap items-center gap-3 mb-6">
+                    <span
+                        class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-2.5 py-1 rounded-full">JavaScript</span>
+                    <span
+                        class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2.5 py-1 rounded-full">HTML</span>
+                    <span
+                        class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2.5 py-1 rounded-full">Css</span>
+                    <span class="text-xs text-zinc-400 ml-1">2026 · 3 weeks</span>
+                </div>
+                <!-- ═══ ARTICLE BODY ═══ -->
+                <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs">
+
+                    <h2>The Overview</h2>
+                    <p>
+                        A to-do application is a digital task manager that helps users capture, organize, and track
+                        their daily responsibilities and goals. Whether it's managing work deadlines, personal projects,
+                        shopping lists, or habit tracking, a to-do app serves as an external brain — allowing users to
+                        offload task memory and focus on execution instead. Common use cases include project management,
+                        personal productivity, team collaboration, and deadline tracking, where the core need is always
+                        the same: capture a task once, view it always, and mark it done when complete.
+                    </p>
+                    <p>For this project, I built the to-do application using vanilla HTML, CSS, and JavaScript — no
+                        frameworks or libraries — to demonstrate core JavaScript fundamentals like DOM manipulation,
+                        state management, CRUD operations (Create, Read, Update, Delete), and event delegation without
+                        relying on React, Vue, or any other abstraction layer. Before writing any code, I invested time
+                        researching design patterns and visual references on platforms like Pinterest and Dribbble to
+                        understand how experienced designers approach productivity interfaces — layout patterns, visual
+                        hierarchy, empty states, and interaction feedback. Then I architected the app around composable
+                        functions, where each function has a single responsibility (add task, delete task, render list)
+                        and triggers other functions based on user interactions, keeping the entire state in a single
+                        JavaScript array and relying on pure DOM manipulation to keep the UI in sync. This approach gave
+                        me hands-on practice with the mental models that frameworks like React eventually abstract away.
+
+                    </p>
+                    <!-- Full-width image -->
+                    <div class="max-w-5xl mx-auto px-6 mb-4">
+                        <div class="reveal photo-frame w-full h-56 md:h-80 rounded-2xl">
+                            <img src="Projectsimages/counter.png"
+                                alt="Existing dashboard audit — heuristic violations mapped" loading="lazy" />
+                        </div>
+                        <p class="img-caption">Existing dashboard with heuristic violations annotated during the audit
+                            phase.</p>
+                    </div>
+
+                    <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs">
+
+                        <h2>Design strategy</h2>
+                        <p>Based on my planning.</p>
+
+                    </div>
+                    <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs">
+                        <h2>Process</h2>
+                        <h3>Week 1 — Created the structure Using html </h3>
+                        <p>The first step was laying out the skeleton of the timer using semantic HTML. This meant
+                            setting up the
+                            container for the countdown display, individual elements for hours, minutes, and seconds
+                            (each with its
+                            own label), and any supporting markup like a heading or event title placeholder. Keeping the
+                            HTML clean
+                            and semantic at this stage made it much easier to hook into with JavaScript later, since
+                            each time unit
+                            had a clearly identifiable element to target and update.</p>
+
+                        <h3>Week 2 — Adding Logic (setinterval/setTimeout)</h3>
+                        <p>With the structure in place, the focus shifted to making the timer actually count down. This
+                            involved
+                            calculating the difference between the target time and the current time using JavaScript's
+                            Date object,
+                            converting that difference into hours, minutes, and seconds, and using setInterval() to
+                            re-run the
+                            calculation every second so the display updates in real time. This was the core logic-heavy
+                            week — getting
+                            the math right (division and modulo to break milliseconds into HH:MM:SS) and making sure the
+                            interval
+                            updated smoothly without drifting or skipping.
+                        </p>
+
+                        <h3>Week 3 — Styling, Testing & Deployment</h3>
+                        <p>
+                            The final week covered turning the functional timer into a polished product. Styling was
+                            applied to give
+                            the countdown a clean, readable visual hierarchy — sizing, spacing, and color treatment for
+                            the
+                            hour/minute/second blocks. This was followed by testing across different scenarios (timer
+                            reaching zero,
+                            page refresh behavior, different target times) to catch edge cases before considering the
+                            project
+                            complete. The last step was deploying the finished timer so it was live and shareable rather
+                            than just
+                            running locally.
+                        </p>
+                    </div>
+
+                    <!-- Second full-width image -->
+                    <div class="max-w-5xl mx-auto px-6 mb-4">
+                        <div class="reveal photo-frame w-full h-56 md:h-80 rounded-2xl">
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80"
+                                alt="High-fidelity Figma screens — new dashboard layout" loading="lazy" />
+                        </div>
+                        <p class="img-caption">Final hi-fi screens showing the redesigned sidebar, dashboard home, and
+                            notification
+                            workflow builder.</p>
+                    </div>
+
+                    <!-- Before / After split -->
+                    <div class="max-w-5xl mx-auto px-6 mb-12">
+                        <div class="reveal grid md:grid-cols-2 gap-4">
+                            <div>
+                                <div class="photo-frame w-full h-52 rounded-2xl">
+                                    <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=700&q=80"
+                                        alt="Before — original dashboard" loading="lazy" />
+                                </div>
+                                <p class="img-caption mt-2">Before — 14-item sidebar, no clear entry point</p>
+                            </div>
+                            <div>
+                                <div class="photo-frame w-full h-52 rounded-2xl">
+                                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=700&q=80"
+                                        alt="After — redesigned dashboard" loading="lazy" />
+                                </div>
+                                <p class="img-caption mt-2">After — 6-item sidebar, goal-first onboarding checklist</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="max-w-3xl mx-auto px-6 pb-16 prose-cs">
+                        <h2>Results</h2>
+                        <p>Building this countdown timer strengthened my grasp of two core JavaScript fundamentals that
+                            come up in
+                            almost every interactive web project:
+
+                            <li>DOM Manipulation — I got hands-on practice selecting elements, updating their text
+                                content in real
+                                time,
+                                and structuring the DOM so it could be efficiently queried and re-rendered on every tick
+                                without causing
+                                layout jank or redundant lookups.</li>
+
+                            <li>setInterval and setTimeout — I learned when and how to use each correctly: setInterval
+                                for the
+                                continuous,
+                                repeating countdown tick, and understanding where setTimeout fits for one-off delayed
+                                actions (like
+                                triggering an "expired" state once the timer hits zero). This also taught me the
+                                importance of clearing
+                                intervals properly to avoid memory leaks or multiple timers running simultaneously.</li>
+
+                            <li>Beyond the technical skills, this project reinforced how much of front-end development
+                                comes down to
+                                keeping logic and presentation cleanly separated — the HTML defines structure, CSS
+                                handles the visual
+                                layer, and JavaScript ties them together through timed, predictable updates.</li>
+                        </p>
+
+                        <h2>Learning Outcomes</h2>
+                        <p>
+                            This project was a focused exercise in strengthening core JavaScript fundamentals rather
+                            than chasing new
+                            frameworks or libraries — and that constraint turned out to be valuable in its own right.
+
+                            <li>Time and date handling in JavaScript — Working directly with the Date object taught me
+                                how timestamps,
+                                milliseconds, and unit conversion (hours/minutes/seconds) actually work under the hood,
+                                instead of relying
+                                on a library to abstract it away.</li>
+
+                            <li>Real-time UI updates — I learned how to keep a UI in sync with changing data using
+                                interval-based
+                                re-rendering, and how to do it without causing performance issues or visual glitches.
+                            </li>
+
+                            <li>Managing asynchronous timing correctly — Understanding the practical difference between
+                                setInterval and
+                                setTimeout, and being careful to clear intervals at the right time, taught me how easy
+                                it is to introduce
+                                subtle bugs (like overlapping timers) if timing logic isn't handled deliberately.</li>
+
+                            <li>Building UI from scratch — Since I designed and styled the interface myself rather than
+                                starting from a
+                                template, I got real practice in translating a visual idea into clean, structured CSS —
+                                thinking about
+                                hierarchy, spacing, and readability for a live, constantly-updating display.</li>
+
+                            <li>
+                                End-to-end project ownership — Taking the project from raw HTML structure, through
+                                logic, through styling,
+                                to actual deployment gave me a full picture of the development lifecycle on a small
+                                scale — something
+                                that's easy to skip when working only on isolated coding exercises.</li>
+
+                            <li>Overall, this project reinforced that solid fundamentals — DOM manipulation, timing
+                                functions, and clean
+                                separation of structure/logic/style — are the foundation that frameworks are eventually
+                                built on top of,
+                                and that comfort with vanilla JS makes picking up any framework later significantly
+                                easier.</li>
+                    </div>
+        </article>
+    </main>
+
+    <footer class="border-t border-zinc-100 dark:border-zinc-900">
+        <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-sm text-zinc-400">© <span id="yr"></span> Eliott. All rights reserved. <br> Developed by <a
+                    href="https://lbegey78.gumroad.com/" target="_blank" class="font-bold">Laurent Begey</a> •
+                Distributed by <a href="https://themewagon.com/" target="_blank" class="font-bold">ThemeWagon</a></p>
+            <p class="text-xs text-zinc-500">Built with <a href="https://tailwindcss.com"
+                    class="hover:text-zinc-900 dark:hover:text-white transition-colors" rel="noopener noreferrer"
+                    target="_blank">Tailwind CSS</a> &amp; <a href="https://alpinejs.dev"
+                    class="hover:text-zinc-900 dark:hover:text-white transition-colors" rel="noopener noreferrer"
+                    target="_blank">Alpine.js</a></p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Reveal on scroll
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+            });
+        }, { threshold: .08, rootMargin: '0px 0px -30px 0px' });
+        document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    </script>
+
+</body>
+
+</html>
