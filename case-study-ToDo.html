@@ -446,7 +446,7 @@
                     <!-- Full-width image -->
                     <div class="max-w-5xl mx-auto px-6 mb-4">
                         <div class="reveal photo-frame w-full h-56 md:h-80 rounded-2xl">
-                            <img src="Projectsimages/counter.png"
+                            <img src="Projectsimages/ToDo-app.png"
                                 alt="Existing dashboard audit — heuristic violations mapped" loading="lazy" />
                         </div>
                         <p class="img-caption">Existing dashboard with heuristic violations annotated during the audit
@@ -461,44 +461,18 @@
                     </div>
                     <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs">
                         <h2>Process</h2>
-                        <h3>Week 1 — Created the structure Using html </h3>
-                        <p>The first step was laying out the skeleton of the timer using semantic HTML. This meant
-                            setting up the
-                            container for the countdown display, individual elements for hours, minutes, and seconds
-                            (each with its
-                            own label), and any supporting markup like a heading or event title placeholder. Keeping the
-                            HTML clean
-                            and semantic at this stage made it much easier to hook into with JavaScript later, since
-                            each time unit
-                            had a clearly identifiable element to target and update.</p>
+                        <h3>Week 1 — Design Research & POC </h3>
+                        <p>Before touching any code, I invested time collecting design references from multiple sources — Pinterest, Dribbble, and other design platforms — to understand how experienced teams approach to-do interfaces. I focused specifically on how dialogs and modals were designed and how they functioned: when to show an "add task" dialog, how to handle edit flows, what confirmation patterns felt natural for deletion, and how priority selection was visually communicated. Instead of copying any single design, I studied patterns across multiple references, then sketched and merged the best ideas into a cohesive direction. This meant creating a proof of concept (POC) for both the visual design and the interaction flow.</p>
 
-                        <h3>Week 2 — Adding Logic (setinterval/setTimeout)</h3>
-                        <p>With the structure in place, the focus shifted to making the timer actually count down. This
-                            involved
-                            calculating the difference between the target time and the current time using JavaScript's
-                            Date object,
-                            converting that difference into hours, minutes, and seconds, and using setInterval() to
-                            re-run the
-                            calculation every second so the display updates in real time. This was the core logic-heavy
-                            week — getting
-                            the math right (division and modulo to break milliseconds into HH:MM:SS) and making sure the
-                            interval
-                            updated smoothly without drifting or skipping.
+                        <h3>Week 2 — Core Implementation & Styling</h3>
+                        <p>With the design POC locked in, I moved to building the actual application. I structured the app around a central data model — a JavaScript array where each task is an object containing properties like id, text, completed, and priority. I built composable functions to handle CRUD operations: addTask() to create new tasks, deleteTask() to remove by ID, updateTask() to modify properties, toggleComplete() to mark tasks done, and renderTasks() as the single source of DOM truth — looping through the array and rebuilding the UI every time state changes.
+                            Next came styling. I applied CSS for clean visual hierarchy, spacing, and color treatment. I also built in form validation — preventing empty submissions and showing helpful error states. The app was made fully responsive, adapting from mobile to desktop. One key feature was the priority dropdown — allowing users to assign and later change task priority, with the UI updating immediately.
                         </p>
 
-                        <h3>Week 3 — Styling, Testing & Deployment</h3>
+                        <h3>Week 3 — Testing & Deployment (with an Honest Learning)</h3>
                         <p>
-                            The final week covered turning the functional timer into a polished product. Styling was
-                            applied to give
-                            the countdown a clean, readable visual hierarchy — sizing, spacing, and color treatment for
-                            the
-                            hour/minute/second blocks. This was followed by testing across different scenarios (timer
-                            reaching zero,
-                            page refresh behavior, different target times) to catch edge cases before considering the
-                            project
-                            complete. The last step was deploying the finished timer so it was live and shareable rather
-                            than just
-                            running locally.
+                            With the core app complete, I moved to testing and discovered a limitation: on page refresh, all tasks disappeared. The root cause was missing localStorage — tasks only existed in memory, so closing or refreshing the page wiped the state. I know this is what needs to happen next, and I'm planning to add persistence in a future iteration. Everything else functioned as intended: CRUD operations, toggling completion, priority selection, and responsive design all worked smoothly.
+                            Once testing wrapped, I pushed all code to GitHub and deployed the application to Vercel.
                         </p>
                     </div>
 
@@ -535,75 +509,38 @@
 
                     <div class="max-w-3xl mx-auto px-6 pb-16 prose-cs">
                         <h2>Results</h2>
-                        <p>Building this countdown timer strengthened my grasp of two core JavaScript fundamentals that
-                            come up in
-                            almost every interactive web project:
+                        <p>Building the to-do application reinforced and deepened my understanding of several core JavaScript patterns that come up in almost every interactive web project:
 
-                            <li>DOM Manipulation — I got hands-on practice selecting elements, updating their text
-                                content in real
-                                time,
-                                and structuring the DOM so it could be efficiently queried and re-rendered on every tick
-                                without causing
-                                layout jank or redundant lookups.</li>
+                            <li>CRUD as the Mental Model — I got hands-on practice implementing all four fundamental operations (Create, Read, Update, Delete) without a framework handling the boilerplate. This taught me what libraries like Firebase are abstracting away, and why CRUD is the skeleton of nearly every application. A social network is just CRUD on posts and users. An e-commerce site is CRUD on products and orders.</li>
 
-                            <li>setInterval and setTimeout — I learned when and how to use each correctly: setInterval
-                                for the
-                                continuous,
-                                repeating countdown tick, and understanding where setTimeout fits for one-off delayed
-                                actions (like
-                                triggering an "expired" state once the timer hits zero). This also taught me the
-                                importance of clearing
-                                intervals properly to avoid memory leaks or multiple timers running simultaneously.</li>
+                            <li>State Management Without Redux or Vuex — The biggest lesson was how hard it is to keep data and UI in sync without a state management library. By storing all tasks in a single JavaScript array and enforcing a strict rule ("the DOM is always rebuilt from the array"), I learned why frameworks like Redux exist — managing state manually introduces subtle bugs. This project showed me the problem those libraries solve.</li>
 
-                            <li>Beyond the technical skills, this project reinforced how much of front-end development
-                                comes down to
-                                keeping logic and presentation cleanly separated — the HTML defines structure, CSS
-                                handles the visual
-                                layer, and JavaScript ties them together through timed, predictable updates.</li>
+                            <li>DOM Manipulation at Scale — With dozens of tasks potentially on screen, I used event delegation instead of adding listeners to each button. This taught me efficient DOM querying, event bubbling, and thinking about performance from the start.</li>
+
+                            <li>Data Structures in Practice — By structuring tasks as objects inside an array and using methods like .find(), and .map(), I practiced real data modeling and made these array methods second nature.</li>
+
+                            <li>The Gap (localStorage) as a Learning — Discovering that tasks vanished on page refresh taught me humility and showed me what comes next. I know exactly what needs to happen, which means the next iteration is already clear.</li>
                         </p>
 
                         <h2>Learning Outcomes</h2>
                         <p>
-                            This project was a focused exercise in strengthening core JavaScript fundamentals rather
-                            than chasing new
-                            frameworks or libraries — and that constraint turned out to be valuable in its own right.
+                            This project was a focused exercise in understanding how applications actually manage data and state — and the constraint of building without a framework turned out to be the most valuable part.
 
-                            <li>Time and date handling in JavaScript — Working directly with the Date object taught me
-                                how timestamps,
-                                milliseconds, and unit conversion (hours/minutes/seconds) actually work under the hood,
-                                instead of relying
-                                on a library to abstract it away.</li>
+                            <li>CRUD Operations as Universal Patterns — Before this project, CRUD felt like a concept you read in docs. Now I understand it viscerally. Every interactive application is built on these four operations, and mastering them in vanilla JavaScript means I can apply the pattern to any tech stack.</li>
 
-                            <li>Real-time UI updates — I learned how to keep a UI in sync with changing data using
-                                interval-based
-                                re-rendering, and how to do it without causing performance issues or visual glitches.
+                            <li>State Management is the Hard Part — I learned that keeping a data structure (the task array) in sync with the UI (the DOM) is where most bugs live. Understanding this problem made me appreciate why libraries like Redux and React exist — they solve this synchronization problem so you don't have to reinvent it.
                             </li>
 
-                            <li>Managing asynchronous timing correctly — Understanding the practical difference between
-                                setInterval and
-                                setTimeout, and being careful to clear intervals at the right time, taught me how easy
-                                it is to introduce
-                                subtle bugs (like overlapping timers) if timing logic isn't handled deliberately.</li>
+                            <li>Functions as Building Blocks — Breaking the app into small, composable functions taught me that well-organized code is a superpower. When things break, I know exactly which function is responsible. When I need to add a feature, I know where it belongs.</li>
 
-                            <li>Building UI from scratch — Since I designed and styled the interface myself rather than
-                                starting from a
-                                template, I got real practice in translating a visual idea into clean, structured CSS —
-                                thinking about
-                                hierarchy, spacing, and readability for a live, constantly-updating display.</li>
+                            <li>Data Modeling Matters — Designing the task object with properties like id, text, completed, and priority was more important than expected. A poor data structure leads to convoluted logic. A clean structure makes everything downstream simpler.</li>
 
                             <li>
-                                End-to-end project ownership — Taking the project from raw HTML structure, through
-                                logic, through styling,
-                                to actual deployment gave me a full picture of the development lifecycle on a small
-                                scale — something
-                                that's easy to skip when working only on isolated coding exercises.</li>
+                                Performance Thinking Starts Early — Using event delegation instead of attaching listeners to every button taught me that performance considerations shouldn't be an afterthought. Small decisions made during initial development compound into large differences as applications scale.</li>
 
-                            <li>Overall, this project reinforced that solid fundamentals — DOM manipulation, timing
-                                functions, and clean
-                                separation of structure/logic/style — are the foundation that frameworks are eventually
-                                built on top of,
-                                and that comfort with vanilla JS makes picking up any framework later significantly
-                                easier.</li>
+                            <li>Identifying Gaps is a Skill — The localStorage realization wasn't a failure — it was learning where the app's limits are. Being able to say "I know what's missing and exactly what I need to add.</li>
+
+                            <li>Overall — Solid fundamentals — data structures, state management, function composition, and clean architecture — are the bedrock that every framework and system is built on. Comfort with these concepts means I can pick up any framework or language with confidence.</li>
                     </div>
         </article>
     </main>
