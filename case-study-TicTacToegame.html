@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{
+  dark: localStorage.getItem('theme')==='dark'||(!localStorage.getItem('theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches),
+  scrolled: false,
+  mobileMenu: false,
+  progress: 0
+}" :class="{'dark':dark}" x-init="
+  $watch('dark', v => localStorage.setItem('theme', v ? 'dark' : 'light'));
+  window.addEventListener('scroll', () => {
+    scrolled = window.scrollY > 20;
+    progress = Math.min(100, Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100));
+  }, { passive: true });
+" class="scroll-smooth">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XV7KD7E7G0"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-XV7KD7E7G0');
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TicTacToeGame case-study" />
+    <meta name="author" content="Nirbhay" />
+    <meta property="og:title" content="Nirbhay Case-study" />
+    <meta property="og:type" content="article" />
+    <title>CountDownTimer- Project-Case study-Nirbhay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { display: ['PT Sans', 'sans-serif'], body: ['DM Sans', 'sans-serif'] },
+                    colors: { accent: '#FF6B2B', 'accent-light': '#FF8F5C' }
+                }
+            }
+        }
+    </script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'PT Sans', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #FF6B2B;
+            border-radius: 99px;
+        }
+
+        body {
+            transition: background-color .3s, color .3s;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: .4;
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1.5px;
+            background: currentColor;
+            transition: width .25s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: rgba(255, 255, 255, .18);
+            transform: skewX(-20deg);
+            transition: left .4s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .btn-primary:hover::after {
+            left: 160%;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .photo-frame {
+            position: relative;
+            overflow: hidden;
+            background: #e4e4e7;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Reading progress */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: #FF6B2B;
+            z-index: 100;
+            transition: width .1s linear;
+        }
+
+        /* Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity .55s cubic-bezier(.4, 0, .2, 1), transform .55s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .d1 {
+            transition-delay: .07s
+        }
+
+        .d2 {
+            transition-delay: .14s
+        }
+
+        .d3 {
+            transition-delay: .21s
+        }
+
+        .d4 {
+            transition-delay: .28s
+        }
+
+        /* Case study prose */
+        .prose-cs h2 {
+            font-family: 'PT Sans', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 700;
+            margin: 2.75rem 0 1rem;
+            line-height: 1.25;
+        }
+
+        .prose-cs h3 {
+            font-family: 'PT Sans', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 2rem 0 .6rem;
+            line-height: 1.3;
+            color: #FF6B2B;
+        }
+
+        .prose-cs p {
+            margin: 0 0 1.4rem;
+            line-height: 1.82;
+            color: #52525b;
+        }
+
+        .dark .prose-cs p {
+            color: #a1a1aa;
+        }
+
+        .prose-cs ul {
+            margin: 0 0 1.4rem 1.5rem;
+            list-style: disc;
+        }
+
+        .prose-cs li {
+            margin-bottom: .45rem;
+            line-height: 1.7;
+            color: #52525b;
+        }
+
+        .dark .prose-cs li {
+            color: #a1a1aa;
+        }
+
+        .prose-cs blockquote {
+            border-left: 3px solid #FF6B2B;
+            padding: .75rem 1.25rem;
+            margin: 0 0 1.8rem;
+            background: #fff7f4;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .dark .prose-cs blockquote {
+            background: #27272a;
+        }
+
+        .prose-cs blockquote p {
+            color: #52525b;
+            font-style: italic;
+            margin: 0;
+        }
+
+        .dark .prose-cs blockquote p {
+            color: #a1a1aa;
+        }
+
+        .prose-cs hr {
+            border: none;
+            border-top: 1px solid #e4e4e7;
+            margin: 2.5rem 0;
+        }
+
+        .dark .prose-cs hr {
+            border-top-color: #27272a;
+        }
+
+        .prose-cs a {
+            color: #FF6B2B;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        /* Stat card */
+        .stat-card {
+            border-left: 3px solid #FF6B2B;
+        }
+
+        /* Image caption */
+        .img-caption {
+            font-size: .8rem;
+            color: #a1a1aa;
+            text-align: center;
+            margin-top: .6rem;
+        }
+
+        /* Step badge */
+        .step-badge {
+            width: 2rem;
+            height: 2rem;
+            min-width: 2rem;
+            border-radius: 50%;
+            background: #FF6B2B;
+            color: #fff;
+            font-family: 'PT Sans', sans-serif;
+            font-weight: 700;
+            font-size: .85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* card hover */
+        .card-h {
+            transition: transform .28s cubic-bezier(.4, 0, .2, 1), border-color .18s;
+        }
+
+        .card-h:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+
+<body class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-body antialiased">
+
+    <!-- Reading progress bar -->
+    <div class="progress-bar" :style="`width:${progress}%`" role="progressbar" :aria-valuenow="progress"
+        aria-valuemin="0" aria-valuemax="100" aria-label="Reading progress"></div>
+
+    <!-- ═══ NAV ═══ -->
+    <header class="fixed top-0.5 left-0 right-0 z-50 transition-all duration-300"
+        :class="scrolled ? 'bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md shadow-sm shadow-black/5' : 'bg-transparent'">
+        <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between" aria-label="Main navigation">
+            <a href="index.html" class="font-display font-bold text-xl tracking-tight z-10">
+                <span class="text-zinc-900 dark:text-white">Nirbhay</span><span class="text-accent">Kumar</span>
+            </a>
+            <ul class="hidden md:flex items-center gap-8 text-sm font-medium" role="list">
+                <li><a href="index.html#services"
+                        class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Skills</a>
+                </li>
+                <li><a href="projects.html" class="nav-link text-accent font-medium">Projects</a></li>
+                <li><a href="index.html#about"
+                        class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">About</a>
+                </li>
+                <!-- <li><a href="blog.html" class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Blog</a></li> -->
+                <li><a href="index.html#contact"
+                        class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Contact</a>
+                </li>
+            </ul>
+            <div class="flex items-center gap-3">
+                <button @click="dark=!dark"
+                    class="w-9 h-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    :aria-label="dark ? 'Light mode' : 'Dark mode'">
+                    <svg x-show="!dark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                    </svg>
+                    <svg x-show="dark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                    </svg>
+                </button>
+                <a href="index.html#contact"
+                    class="hidden md:inline-flex items-center gap-2 btn-primary bg-accent text-white text-sm font-medium px-5 py-2 rounded-full hover:bg-accent-light transition-colors">Hire
+                    me →</a>
+                <button @click="mobileMenu=!mobileMenu"
+                    class="md:hidden w-9 h-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800"
+                    aria-label="Toggle menu">
+                    <svg x-show="!mobileMenu" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <svg x-show="mobileMenu" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </nav>
+        <div x-show="mobileMenu" x-cloak x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-2"
+            class="md:hidden bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-zinc-900">
+            <ul class="flex flex-col px-6 py-4 gap-4 text-sm font-medium" role="list">
+                <li><a href="index.html#services" @click="mobileMenu=false"
+                        class="block text-zinc-700 dark:text-zinc-300">SKills</a></li>
+                <li><a href="projects.html" @click="mobileMenu=false" class="block text-accent font-medium">Projects</a>
+                </li>
+                <li><a href="index.html#about" @click="mobileMenu=false"
+                        class="block text-zinc-700 dark:text-zinc-300">About</a></li>
+                <!-- <li><a href="blog.html" @click="mobileMenu=false" class="block text-zinc-700 dark:text-zinc-300">Blog</a></li> -->
+                <li><a href="index.html#contact" @click="mobileMenu=false"
+                        class="block text-zinc-700 dark:text-zinc-300">Contact</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ═══ CASE STUDY HEADER ═══ -->
+        <article>
+            <header class="pt-32 pb-10 max-w-4xl mx-auto px-6">
+
+                <!-- Back link -->
+                <a href="projects.html"
+                    class="inline-flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-accent transition-colors mb-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                    </svg>
+                    Back to projects
+                </a>
+
+                <!-- Tags + date -->
+                <div class="flex flex-wrap items-center gap-3 mb-6">
+                    <span
+                        class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-2.5 py-1 rounded-full">JavaScript</span>
+                    <span
+                        class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2.5 py-1 rounded-full">HTML</span>
+                    <span
+                        class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2.5 py-1 rounded-full">Css</span>
+                    <span class="text-xs text-zinc-400 ml-1">2026 · 3 weeks</span>
+                </div>
+                <!-- ═══ ARTICLE BODY ═══ -->
+                <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs">
+
+                    <h2>The Overview</h2>
+                    <p>Tic-Tac-Toe looks like the simplest game you can build — a 3x3 grid, two players, three in a row
+                        wins. But underneath that simplicity sits one of the cleanest problems for practicing real
+                        software architecture: how do you keep game rules, application state, and what's on screen from
+                        turning into a tangled mess the moment you add features like multi-round play, a scoreboard, or
+                        persistence?
+                    </p>
+                    <p>For this project, I built a multi-round Tic-Tac-Toe game using vanilla JavaScript, HTML, and CSS
+                        — no frameworks — specifically to practice the architectural thinking that frameworks like React
+                        later abstract away. Rather than treating this as a one-off "make it work" exercise, I used it
+                        to enforce a strict separation between three layers: state (the single source of truth for whose
+                        turn it is, the board, and scores), rules (pure functions that decide what happens next —
+                        checking wins, draws, and valid moves — without ever touching the DOM), and rendering (functions
+                        whose only job is to mirror whatever the current state is onto the screen). That separation
+                        became the backbone of the entire build, and it's the lesson I kept coming back to every time
+                        something broke.</p>
+                    <!-- Full-width image -->
+                    <div class="max-w-5xl mx-auto px-6 mb-4">
+                        <div class="reveal photo-frame w-full h-56 md:h-80 rounded-2xl">
+                            <img src="Projectsimages/counter.png"
+                                alt="Existing dashboard audit — heuristic violations mapped" loading="lazy" />
+                        </div>
+                        <p class="img-caption">Existing dashboard with heuristic violations annotated during the audit
+                            phase.</p>
+                    </div>
+
+                    <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs">
+
+                        <h2>Design strategy</h2>
+                        <p>Based on my planning.</p>
+
+                    </div>
+                    <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs">
+                        <h2>Process</h2>
+                        <h3>Week 1 — Architecture & Planning </h3>
+                        <p>I started by deciding how state, rules, and rendering would be split before writing any game
+                            logic. The rule was simple: rules are pure functions that never touch the DOM, rendering
+                            functions only read state and paint it to the screen, and the UI is never allowed to be a
+                            source of truth — it's a mirror of state, never the other way around. This single principle
+                            shaped every decision that followed and is the architectural insight I'd point to as the
+                            biggest takeaway from the whole project.</p>
+
+                        <h3>Week 2 — Core Game Logic & Player Data</h3>
+                        <p>With the architecture decided, I built the player data structure — an array of objects, each
+                            carrying name, symbol, score, and turn state — and used it to drive a live turn indicator
+                            that updates as players alternate. I implemented the win/draw-checking logic as pure
+                            functions operating only on the board state, then wired up a dynamic Reset/New Game button
+                            that changes behavior depending on whether a round or the whole match is ending.
+                        </p>
+
+                        <h3>Week 3 — Scoreboard, Persistence & a Real Debugging Lesson</h3>
+                        <p>
+                            Next came the scoreboard, tracking wins across rounds per player, and localStorage
+                            integration so scores would persist between rounds within a session. This phase surfaced the
+                            most valuable bug of the project: a variable (countForClick) tracking clicks and turn state
+                            was scoped inside a function, which meant it silently failed to reset properly between
+                            rounds. Moving that state to the correct outer scope fixed it — a small change, but it
+                            taught me more about closures and variable lifetime than any tutorial had. It also
+                            reinforced why keeping state centralized (per the Phase 1 architecture) makes bugs like this
+                            easier to isolate and fix.
+                        </p>
+                        <h3>Week4- Testing & Sharing the Build</h3>
+                        <p>Testing surfaced one open gap: localStorage writes scores correctly on every win or draw, but
+                            the score isn't read back in on a full page reload — so a hard refresh currently resets the
+                            board to zero even though the write-side of persistence works. I've flagged this as the
+                            clear next step rather than treating it as a blocker. Once the core game was stable, I
+                            shared the project on LinkedIn, deliberately framing the post around the architectural
+                            decisions — the state/rules/rendering split, the scoping bug, the data structure choice —
+                            rather than just announcing "I built a game."</p>
+                    </div>
+
+                    <!-- Second full-width image -->
+                    <div class="max-w-5xl mx-auto px-6 mb-4">
+                        <div class="reveal photo-frame w-full h-56 md:h-80 rounded-2xl">
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80"
+                                alt="High-fidelity Figma screens — new dashboard layout" loading="lazy" />
+                        </div>
+                        <p class="img-caption">Final hi-fi screens showing the redesigned sidebar, dashboard home, and
+                            notification
+                            workflow builder.</p>
+                    </div>
+
+                    <!-- Before / After split -->
+                    <div class="max-w-5xl mx-auto px-6 mb-12">
+                        <div class="reveal grid md:grid-cols-2 gap-4">
+                            <div>
+                                <div class="photo-frame w-full h-52 rounded-2xl">
+                                    <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=700&q=80"
+                                        alt="Before — original dashboard" loading="lazy" />
+                                </div>
+                                <p class="img-caption mt-2">Before — 14-item sidebar, no clear entry point</p>
+                            </div>
+                            <div>
+                                <div class="photo-frame w-full h-52 rounded-2xl">
+                                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=700&q=80"
+                                        alt="After — redesigned dashboard" loading="lazy" />
+                                </div>
+                                <p class="img-caption mt-2">After — 6-item sidebar, goal-first onboarding checklist</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="max-w-3xl mx-auto px-6 pb-16 prose-cs">
+                        <h2>Results</h2>
+                        <p>Building this project turned a "simple" game into a concentrated lesson in software
+                            architecture fundamentals.
+
+                            <li>State/Rules/Rendering Separation — Treating these as three distinct layers, rather than
+                                letting DOM code and game logic blur together, was the single biggest architectural
+                                lesson of the project. Rules stayed pure and testable; rendering stayed dumb and
+                                predictable.</li>
+
+                            <li>UI as a Mirror, Never a Source of Truth — By enforcing that the DOM only ever reflects
+                                state and never holds it, I avoided an entire category of "the screen says one thing but
+                                the game thinks another" bugs before they could happen.</li>
+
+                            <li>Scope Discipline — The countForClick bug was a direct lesson in how JavaScript scoping
+                                affects state that needs to persist and reset correctly across function calls. Fixing it
+                                by relocating state to the right scope was a small change with an outsized understanding
+                                gain.</li>
+                        </p>
+
+                        <h2>Learning Outcomes</h2>
+                        <p>
+                            This project reinforced that even a "simple" game is a serious testing ground for
+                            architectural discipline — and that the constraints I set for myself mattered more than the
+                            game mechanics themselves.
+
+                            <li>Separation of Concerns Isn't Optional at Scale — Splitting state, rules, and rendering
+                                from the start meant that adding the scoreboard and multi-round logic later didn't
+                                require rewriting existing code — only extending it.</li>
+
+                            <li>Bugs Are the Best Teachers of Scope — The turn-tracking bug taught me, viscerally, why
+                                where you declare state matters as much as what the state is.
+                            </li>
+
+                            <li>Overall — This project confirmed that the core skills underneath every framework — clean
+                                state management, pure functions, correct scoping, and deliberate data modeling — are
+                                what actually make code maintainable. Games are a small surface area, but the
+                                architectural lessons scale directly to larger applications.</li>
+                    </div>
+        </article>
+    </main>
+
+    <footer class="border-t border-zinc-100 dark:border-zinc-900">
+        <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-sm text-zinc-400">© <span id="yr"></span> Eliott. All rights reserved. <br> Developed by <a
+                    href="https://lbegey78.gumroad.com/" target="_blank" class="font-bold">Laurent Begey</a> •
+                Distributed by <a href="https://themewagon.com/" target="_blank" class="font-bold">ThemeWagon</a></p>
+            <p class="text-xs text-zinc-500">Built with <a href="https://tailwindcss.com"
+                    class="hover:text-zinc-900 dark:hover:text-white transition-colors" rel="noopener noreferrer"
+                    target="_blank">Tailwind CSS</a> &amp; <a href="https://alpinejs.dev"
+                    class="hover:text-zinc-900 dark:hover:text-white transition-colors" rel="noopener noreferrer"
+                    target="_blank">Alpine.js</a></p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Reveal on scroll
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+            });
+        }, { threshold: .08, rootMargin: '0px 0px -30px 0px' });
+        document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    </script>
+
+</body>
+
+</html>
