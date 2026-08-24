@@ -24,12 +24,11 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description"
-        content="Todo application-case study" />
+    <meta name="description" content="TicTacToeGame case-study" />
     <meta name="author" content="Nirbhay" />
-    <meta property="og:title" content="Todo application-case study" />
+    <meta property="og:title" content="Nirbhay Case-study" />
     <meta property="og:type" content="article" />
-    <title>ToDo-Application- Project-Case study-Nirbhay</title>
+    <title>CountDownTimer- Project-Case study-Nirbhay</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -422,31 +421,25 @@
                 <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs">
 
                     <h2>The Overview</h2>
-                    <p>
-                        A to-do application is a digital task manager that helps users capture, organize, and track
-                        their daily responsibilities and goals. Whether it's managing work deadlines, personal projects,
-                        shopping lists, or habit tracking, a to-do app serves as an external brain — allowing users to
-                        offload task memory and focus on execution instead. Common use cases include project management,
-                        personal productivity, team collaboration, and deadline tracking, where the core need is always
-                        the same: capture a task once, view it always, and mark it done when complete.
+                    <p>Tic-Tac-Toe looks like the simplest game you can build — a 3x3 grid, two players, three in a row
+                        wins. But underneath that simplicity sits one of the cleanest problems for practicing real
+                        software architecture: how do you keep game rules, application state, and what's on screen from
+                        turning into a tangled mess the moment you add features like multi-round play, a scoreboard, or
+                        persistence?
                     </p>
-                    <p>For this project, I built the to-do application using vanilla HTML, CSS, and JavaScript — no
-                        frameworks or libraries — to demonstrate core JavaScript fundamentals like DOM manipulation,
-                        state management, CRUD operations (Create, Read, Update, Delete), and event delegation without
-                        relying on React, Vue, or any other abstraction layer. Before writing any code, I invested time
-                        researching design patterns and visual references on platforms like Pinterest and Dribbble to
-                        understand how experienced designers approach productivity interfaces — layout patterns, visual
-                        hierarchy, empty states, and interaction feedback. Then I architected the app around composable
-                        functions, where each function has a single responsibility (add task, delete task, render list)
-                        and triggers other functions based on user interactions, keeping the entire state in a single
-                        JavaScript array and relying on pure DOM manipulation to keep the UI in sync. This approach gave
-                        me hands-on practice with the mental models that frameworks like React eventually abstract away.
-
-                    </p>
+                    <p>For this project, I built a multi-round Tic-Tac-Toe game using vanilla JavaScript, HTML, and CSS
+                        — no frameworks — specifically to practice the architectural thinking that frameworks like React
+                        later abstract away. Rather than treating this as a one-off "make it work" exercise, I used it
+                        to enforce a strict separation between three layers: state (the single source of truth for whose
+                        turn it is, the board, and scores), rules (pure functions that decide what happens next —
+                        checking wins, draws, and valid moves — without ever touching the DOM), and rendering (functions
+                        whose only job is to mirror whatever the current state is onto the screen). That separation
+                        became the backbone of the entire build, and it's the lesson I kept coming back to every time
+                        something broke.</p>
                     <!-- Full-width image -->
                     <div class="max-w-5xl mx-auto px-6 mb-4">
                         <div class="reveal photo-frame w-full h-56 md:h-80 rounded-2xl">
-                            <img src="Projectsimages/ToDo-app.png"
+                            <img src="Projectsimages/counter.png"
                                 alt="Existing dashboard audit — heuristic violations mapped" loading="lazy" />
                         </div>
                         <p class="img-caption">Existing dashboard with heuristic violations annotated during the audit
@@ -461,19 +454,41 @@
                     </div>
                     <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs">
                         <h2>Process</h2>
-                        <h3>Week 1 — Design Research & POC </h3>
-                        <p>Before touching any code, I invested time collecting design references from multiple sources — Pinterest, Dribbble, and other design platforms — to understand how experienced teams approach to-do interfaces. I focused specifically on how dialogs and modals were designed and how they functioned: when to show an "add task" dialog, how to handle edit flows, what confirmation patterns felt natural for deletion, and how priority selection was visually communicated. Instead of copying any single design, I studied patterns across multiple references, then sketched and merged the best ideas into a cohesive direction. This meant creating a proof of concept (POC) for both the visual design and the interaction flow.</p>
+                        <h3>Week 1 — Architecture & Planning </h3>
+                        <p>I started by deciding how state, rules, and rendering would be split before writing any game
+                            logic. The rule was simple: rules are pure functions that never touch the DOM, rendering
+                            functions only read state and paint it to the screen, and the UI is never allowed to be a
+                            source of truth — it's a mirror of state, never the other way around. This single principle
+                            shaped every decision that followed and is the architectural insight I'd point to as the
+                            biggest takeaway from the whole project.</p>
 
-                        <h3>Week 2 — Core Implementation & Styling</h3>
-                        <p>With the design POC locked in, I moved to building the actual application. I structured the app around a central data model — a JavaScript array where each task is an object containing properties like id, text, completed, and priority. I built composable functions to handle CRUD operations: addTask() to create new tasks, deleteTask() to remove by ID, updateTask() to modify properties, toggleComplete() to mark tasks done, and renderTasks() as the single source of DOM truth — looping through the array and rebuilding the UI every time state changes.
-                            Next came styling. I applied CSS for clean visual hierarchy, spacing, and color treatment. I also built in form validation — preventing empty submissions and showing helpful error states. The app was made fully responsive, adapting from mobile to desktop. One key feature was the priority dropdown — allowing users to assign and later change task priority, with the UI updating immediately.
+                        <h3>Week 2 — Core Game Logic & Player Data</h3>
+                        <p>With the architecture decided, I built the player data structure — an array of objects, each
+                            carrying name, symbol, score, and turn state — and used it to drive a live turn indicator
+                            that updates as players alternate. I implemented the win/draw-checking logic as pure
+                            functions operating only on the board state, then wired up a dynamic Reset/New Game button
+                            that changes behavior depending on whether a round or the whole match is ending.
                         </p>
 
-                        <h3>Week 3 — Testing & Deployment (with an Honest Learning)</h3>
+                        <h3>Week 3 — Scoreboard, Persistence & a Real Debugging Lesson</h3>
                         <p>
-                            With the core app complete, I moved to testing and discovered a limitation: on page refresh, all tasks disappeared. The root cause was missing localStorage — tasks only existed in memory, so closing or refreshing the page wiped the state. I know this is what needs to happen next, and I'm planning to add persistence in a future iteration. Everything else functioned as intended: CRUD operations, toggling completion, priority selection, and responsive design all worked smoothly.
-                            Once testing wrapped, I pushed all code to GitHub and deployed the application to Vercel.
+                            Next came the scoreboard, tracking wins across rounds per player, and localStorage
+                            integration so scores would persist between rounds within a session. This phase surfaced the
+                            most valuable bug of the project: a variable (countForClick) tracking clicks and turn state
+                            was scoped inside a function, which meant it silently failed to reset properly between
+                            rounds. Moving that state to the correct outer scope fixed it — a small change, but it
+                            taught me more about closures and variable lifetime than any tutorial had. It also
+                            reinforced why keeping state centralized (per the Phase 1 architecture) makes bugs like this
+                            easier to isolate and fix.
                         </p>
+                        <h3>Week4- Testing & Sharing the Build</h3>
+                        <p>Testing surfaced one open gap: localStorage writes scores correctly on every win or draw, but
+                            the score isn't read back in on a full page reload — so a hard refresh currently resets the
+                            board to zero even though the write-side of persistence works. I've flagged this as the
+                            clear next step rather than treating it as a blocker. Once the core game was stable, I
+                            shared the project on LinkedIn, deliberately framing the post around the architectural
+                            decisions — the state/rules/rendering split, the scoping bug, the data structure choice —
+                            rather than just announcing "I built a game."</p>
                     </div>
 
                     <!-- Second full-width image -->
@@ -509,38 +524,42 @@
 
                     <div class="max-w-3xl mx-auto px-6 pb-16 prose-cs">
                         <h2>Results</h2>
-                        <p>Building the to-do application reinforced and deepened my understanding of several core JavaScript patterns that come up in almost every interactive web project:
+                        <p>Building this project turned a "simple" game into a concentrated lesson in software
+                            architecture fundamentals.
 
-                            <li>CRUD as the Mental Model — I got hands-on practice implementing all four fundamental operations (Create, Read, Update, Delete) without a framework handling the boilerplate. This taught me what libraries like Firebase are abstracting away, and why CRUD is the skeleton of nearly every application. A social network is just CRUD on posts and users. An e-commerce site is CRUD on products and orders.</li>
+                            <li>State/Rules/Rendering Separation — Treating these as three distinct layers, rather than
+                                letting DOM code and game logic blur together, was the single biggest architectural
+                                lesson of the project. Rules stayed pure and testable; rendering stayed dumb and
+                                predictable.</li>
 
-                            <li>State Management Without Redux or Vuex — The biggest lesson was how hard it is to keep data and UI in sync without a state management library. By storing all tasks in a single JavaScript array and enforcing a strict rule ("the DOM is always rebuilt from the array"), I learned why frameworks like Redux exist — managing state manually introduces subtle bugs. This project showed me the problem those libraries solve.</li>
+                            <li>UI as a Mirror, Never a Source of Truth — By enforcing that the DOM only ever reflects
+                                state and never holds it, I avoided an entire category of "the screen says one thing but
+                                the game thinks another" bugs before they could happen.</li>
 
-                            <li>DOM Manipulation at Scale — With dozens of tasks potentially on screen, I used event delegation instead of adding listeners to each button. This taught me efficient DOM querying, event bubbling, and thinking about performance from the start.</li>
-
-                            <li>Data Structures in Practice — By structuring tasks as objects inside an array and using methods like .find(), and .map(), I practiced real data modeling and made these array methods second nature.</li>
-
-                            <li>The Gap (localStorage) as a Learning — Discovering that tasks vanished on page refresh taught me humility and showed me what comes next. I know exactly what needs to happen, which means the next iteration is already clear.</li>
+                            <li>Scope Discipline — The countForClick bug was a direct lesson in how JavaScript scoping
+                                affects state that needs to persist and reset correctly across function calls. Fixing it
+                                by relocating state to the right scope was a small change with an outsized understanding
+                                gain.</li>
                         </p>
 
                         <h2>Learning Outcomes</h2>
                         <p>
-                            This project was a focused exercise in understanding how applications actually manage data and state — and the constraint of building without a framework turned out to be the most valuable part.
+                            This project reinforced that even a "simple" game is a serious testing ground for
+                            architectural discipline — and that the constraints I set for myself mattered more than the
+                            game mechanics themselves.
 
-                            <li>CRUD Operations as Universal Patterns — Before this project, CRUD felt like a concept you read in docs. Now I understand it viscerally. Every interactive application is built on these four operations, and mastering them in vanilla JavaScript means I can apply the pattern to any tech stack.</li>
+                            <li>Separation of Concerns Isn't Optional at Scale — Splitting state, rules, and rendering
+                                from the start meant that adding the scoreboard and multi-round logic later didn't
+                                require rewriting existing code — only extending it.</li>
 
-                            <li>State Management is the Hard Part — I learned that keeping a data structure (the task array) in sync with the UI (the DOM) is where most bugs live. Understanding this problem made me appreciate why libraries like Redux and React exist — they solve this synchronization problem so you don't have to reinvent it.
+                            <li>Bugs Are the Best Teachers of Scope — The turn-tracking bug taught me, viscerally, why
+                                where you declare state matters as much as what the state is.
                             </li>
 
-                            <li>Functions as Building Blocks — Breaking the app into small, composable functions taught me that well-organized code is a superpower. When things break, I know exactly which function is responsible. When I need to add a feature, I know where it belongs.</li>
-
-                            <li>Data Modeling Matters — Designing the task object with properties like id, text, completed, and priority was more important than expected. A poor data structure leads to convoluted logic. A clean structure makes everything downstream simpler.</li>
-
-                            <li>
-                                Performance Thinking Starts Early — Using event delegation instead of attaching listeners to every button taught me that performance considerations shouldn't be an afterthought. Small decisions made during initial development compound into large differences as applications scale.</li>
-
-                            <li>Identifying Gaps is a Skill — The localStorage realization wasn't a failure — it was learning where the app's limits are. Being able to say "I know what's missing and exactly what I need to add  I marked it as learnign ouutcomes.</li>
-
-                            <li>Overall — Solid fundamentals — data structures, state management, function composition, and clean architecture — are the bedrock that every framework and system is built on. Comfort with these concepts means I can pick up any framework or language with confidence.</li>
+                            <li>Overall — This project confirmed that the core skills underneath every framework — clean
+                                state management, pure functions, correct scoping, and deliberate data modeling — are
+                                what actually make code maintainable. Games are a small surface area, but the
+                                architectural lessons scale directly to larger applications.</li>
                     </div>
         </article>
     </main>
